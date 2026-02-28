@@ -1,0 +1,180 @@
+================================================================
+REDEEMIT — AI CODING INSTRUCTIONS & PROJECT CONTEXT
+================================================================
+
+----------------------------------------------------------------
+1. PROJECT OVERVIEW
+----------------------------------------------------------------
+RedeemIt is a gift card management web app + Chrome extension.
+Users upload gift cards, the app uses OCR to extract card info,
+and the Chrome extension auto-detects checkout pages and surfaces
+the right card at the right time.
+
+Core user flow:
+  1. User uploads gift card image → OCR extracts number/PIN/expiry
+  2. Card appears in dashboard with retailer logo and balance
+  3. Chrome extension detects checkout pages and shows matching cards
+  4. After purchase, user logs amount spent → balance updates
+  5. App notifies user when cards are expiring within 7 days
+
+----------------------------------------------------------------
+2. TECH STACK
+----------------------------------------------------------------
+Backend:   Python + FastAPI + SQLModel
+Database:  Supabase (Postgres)
+Auth:      Supabase Auth (JWT via httpx verification)
+OCR:       Google Cloud Vision API
+Logos:     Brandfetch API
+Emails:    Resend API
+Frontend:  React + Tailwind CSS + React Router
+Extension: Vanilla JS, Manifest V3
+
+----------------------------------------------------------------
+3. FILE STRUCTURE
+----------------------------------------------------------------
+backend/
+├── api/
+│   ├── app.py            # FastAPI app, middleware, routers
+│   ├── database.py       # Engine, session, create_tables
+│   ├── models.py         # All SQLModel classes
+│   ├── dependencies.py   # Auth dependency, SessionDep, CurrentUser
+│   └── routes/
+│       ├── auth.py       # /auth/signup, /auth/login, /auth/logout
+│       ├── giftcards.py  # All /giftcards/* endpoints
+│       └── transactions.py # /giftcards/{id}/transactions
+.env                      # Never commit this
+
+----------------------------------------------------------------
+4. DATABASE SCHEMA
+----------------------------------------------------------------
+GiftCard table fields:
+  id, user_id (str/UUID from Supabase), brand, category,
+  expiration_date, logo_url, card_number, pin,
+  original_balance, balance, last_used
+
+Transaction table fields:
+  id, gift_card_id, amount_spent, balance_after, created_at
+
+Rules:
+- user_id is always a UUID string from Supabase Auth
+- balance is always set to original_balance on card creation
+- Every spend must create a Transaction row AND update balance atomically
+- Never allow balance to go below 0
+
+----------------------------------------------------------------
+5. AUTH PATTERN
+----------------------------------------------------------------
+- Auth is handled by Supabase
+- Tokens are verified by calling Supabase /auth/v1/user endpoint
+  via httpx (NOT by decoding JWT locally)
+- Every protected endpoint receives current_user: CurrentUser
+- Every DB query MUST filter by user_id == current_user
+- Never return another user's cards, transactions, or data
+
+Example protected endpoint pattern:
+  def my_endpoint(session: SessionDep, current_user: CurrentUser):
+      cards = session.exec(
+          select(GiftCard).where(GiftCard.user_id == current_user)
+      ).all()
+
+----------------------------------------------------------------
+6. API ENDPOINTS REFERENCE
+----------------------------------------------------------------
+Auth:
+  POST /auth/signup
+  POST /auth/login       → returns access_token
+  POST /auth/logout
+
+Gift Cards:
+  POST   /giftcards/                    Create card
+  GET    /giftcards/                    List cards (filter/sort)
+  GET    /giftcards/summary             Total balance, count, expiring soon
+  GET    /giftcards/expiring/soon       Cards expiring within N days
+  GET    /giftcards/by-retailer/{brand} For Chrome extension checkout matching
+  GET    /giftcards/{id}                Full card detail (includes card_number, pin)
+  PATCH  /giftcards/{id}                Update card fields
+  DELETE /giftcards/{id}                Delete card
+
+Transactions:
+  POST /giftcards/{id}/transactions     Log a spend, updates balance
+  GET  /giftcards/{id}/transactions     Get spend history
+
+----------------------------------------------------------------
+7. MODELS REFERENCE
+----------------------------------------------------------------
+- GiftCardCreate: what the user sends to create a card (no balance, no user_id)
+- GiftCardPublic: safe to return in lists (no card_number, no pin)
+- GiftCardRead:   full detail for individual card page (includes card_number, pin)
+- GiftCardUpdate: all optional fields for PATCH
+- TransactionCreate: just amount_spent (gift_card_id comes from URL)
+
+----------------------------------------------------------------
+8. COMMON MISTAKES TO AVOID
+----------------------------------------------------------------
+- DO NOT forget to filter every query by user_id
+- DO NOT return card_number or pin in list endpoints (use GiftCardPublic)
+- DO NOT allow balance to go negative in transactions
+- DO NOT use HS256 to decode Supabase JWTs — use httpx verification
+- DO NOT put user_id in GiftCardCreate — get it from the auth token
+- DO NOT use "/" in PATCH route — it should be "/{giftcard_id}" not "/{giftcard_id}/"
+- DO NOT create duplicate route names (causes Duplicate Operation ID warnings)
+- DO NOT commit .env to git
+- DO NOT log sensitive fields like card_number or pin in error messages
+
+----------------------------------------------------------------
+9. ENVIRONMENT VARIABLES (.env)
+----------------------------------------------------------------
+DATABASE_URL=postgresql://postgres:PASSWORD@db.PROJECT.supabase.co:5432/postgres
+SUPABASE_URL=https://PROJECT.supabase.co
+SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_JWT_SECRET=your_jwt_secret
+DEBUG=True
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+----------------------------------------------------------------
+10. RUNNING THE APP
+----------------------------------------------------------------
+cd backend
+uvicorn api.app:app --reload
+
+Docs available at: http://127.0.0.1:8000/docs
+Test auth at docs by: signup → login → copy token → click Authorize 🔒
+
+----------------------------------------------------------------
+11. DESIGN RULES (for frontend teammates)
+----------------------------------------------------------------
+- Each gift card tile uses the retailer's brand color as gradient bg
+- Expiring cards (<7 days): pulsing red border
+- Low balance cards (<10% remaining): progress bar turns orange
+- Dashboard header: always show total balance across all cards
+- Sort options: expiring soonest | highest balance | longest unused
+- Category filter pills: clothing | food | electronics | entertainment | other
+- Chrome extension widget: 300px wide, same design system as website
+- Card number and PIN: masked by default, revealed on click/copy
+
+----------------------------------------------------------------
+12. CHROME EXTENSION BEHAVIOR
+----------------------------------------------------------------
+- Watches for URL patterns: /checkout, /cart, /order
+- On checkout page: calls GET /giftcards/by-retailer/{brand}
+- Shows matching cards in bottom-right drawer pill
+- After order confirmation page: prompts to log spend amount
+- Calls POST /giftcards/{id}/transactions with amount
+- Extension icon badge shows total balance at all times
+- Auth: stores session token in chrome.storage
+
+----------------------------------------------------------------
+13. SECURITY CHECKLIST
+----------------------------------------------------------------
+[ ] Every endpoint filters by user_id from auth token
+[ ] card_number and pin never returned in list responses
+[ ] .env is in .gitignore
+[ ] No API keys hardcoded in frontend or extension code
+[ ] Balance can never go below 0
+[ ] Ownership verified before any update or delete
+[ ] Generic error messages returned to client (no stack traces)
+[ ] CORS restricted to known origins only
+
+================================================================
+END OF INSTRUCTIONS
+================================================================
