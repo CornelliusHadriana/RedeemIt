@@ -65,12 +65,12 @@ curl -X GET "$BASE_URL/giftcards/1/transactions" \
 
 echo -e "\n\n8. Getting expiring cards within 7 days..."
 # 8. Get expiring cards
-curl -X GET "$BASE_URL/giftcards/expiring?days=7" \
+curl -X GET "$BASE_URL/giftcards/expiring/soon?days=7" \
   -H "Authorization: Bearer $TOKEN"
 
 echo -e "\n\n9. Getting summary stats..."
 # 9. Get summary stats
-curl -X GET "$BASE_URL/giftcards/stats" \
+curl -X GET "$BASE_URL/giftcards/summary" \
   -H "Authorization: Bearer $TOKEN"
 
 echo -e "\n\n10. Deleting gift card id 1..."

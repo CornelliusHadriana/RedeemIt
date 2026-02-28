@@ -9,9 +9,11 @@ router = APIRouter(prefix="/giftcards", tags=["giftcards"])
 
 @router.post("/", response_model=GiftCardPublic)
 def create_giftcard(giftcard: GiftCardCreate, session: SessionDep, current_user: CurrentUser):
-    db_giftcard = GiftCard.model_validate(giftcard)
-    db_giftcard.user_id = current_user
-    db_giftcard.balance = giftcard.original_balance
+    db_giftcard = GiftCard(
+        **giftcard.model_dump(),
+        user_id=current_user,
+        balance=giftcard.original_balance
+    )
     session.add(db_giftcard)
     session.commit()
     session.refresh(db_giftcard)
