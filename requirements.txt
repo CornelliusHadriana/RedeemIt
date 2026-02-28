@@ -2,6 +2,7 @@ fastapi
 uvicorn
 sqlalchemy
 python-dotenv
+python-multipart
 pydantic>=2.11.7
 pydantic-settings
 requests

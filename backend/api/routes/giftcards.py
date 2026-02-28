@@ -1,11 +1,66 @@
-from fastapi import APIRouter, HTTPException, Query
+import sys
+from pathlib import Path
+
+# Add project root to path for imageparsing import
+project_root = Path(__file__).parent.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from typing import Annotated
 from sqlmodel import select
 from datetime import datetime, timezone, timedelta
-from api.models import GiftCard, GiftCardCreate, GiftCardUpdate, GiftCardPublic, GiftCardRead, Transaction
+from api.models import GiftCard, GiftCardCreate, GiftCardUpdate, GiftCardPublic, GiftCardRead, Transaction, GiftCardParseResult
 from api.dependencies import SessionDep, CurrentUser
+from imageparsing.card_reader import GiftCardReader
 
 router = APIRouter(prefix="/giftcards", tags=["giftcards"])
+
+# Initialize the card reader (LLM used as fallback if GOOGLE_API_KEY is set)
+card_reader = GiftCardReader(use_llm=True)
+
+
+@router.post("/upload", response_model=GiftCardParseResult)
+async def upload_giftcard_image(
+    file: UploadFile = File(...),
+    current_user: str = None,  # Optional auth - can be used without login for parsing
+):
+    """
+    Upload a gift card image and extract card information using OCR.
+    
+    Returns extracted data for user to review/edit before saving.
+    Does NOT save to database - use POST /giftcards/ with the returned data.
+    """
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Read image bytes
+    image_bytes = await file.read()
+    
+    if len(image_bytes) == 0:
+        raise HTTPException(status_code=400, detail="Empty file uploaded")
+    
+    if len(image_bytes) > 10 * 1024 * 1024:  # 10MB limit
+        raise HTTPException(status_code=400, detail="File too large (max 10MB)")
+    
+    try:
+        # Extract card info using OCR
+        card_info = card_reader.read_image_bytes(image_bytes)
+        
+        # Convert to response model
+        return GiftCardParseResult(
+            brand=card_info.brand,
+            card_number=card_info.card_number,
+            pin=card_info.pin,
+            balance=card_info.balance,
+            expiration_date=card_info.expiration_date.isoformat() if card_info.expiration_date else None,
+            confidence=card_info.confidence,
+            raw_text=card_info.raw_text,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Failed to process image: {str(e)}")
+
 
 @router.post("/", response_model=GiftCardPublic)
 def create_giftcard(giftcard: GiftCardCreate, session: SessionDep, current_user: CurrentUser):

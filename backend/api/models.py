@@ -144,3 +144,15 @@ class AuthResponse(SQLModel):
     access_token: str
     token_type: str = "bearer"
     user: UserRead
+
+# ============== IMAGE PARSING MODELS ==============
+
+class GiftCardParseResult(SQLModel):
+    """Response from image upload/parsing endpoint"""
+    brand: str | None = None
+    card_number: str | None = None
+    pin: str | None = None
+    balance: float | None = None
+    expiration_date: str | None = None  # ISO format date string
+    confidence: float = 0.0
+    raw_text: str | None = None
