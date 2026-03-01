@@ -79,7 +79,7 @@ body {
 }
 
 .card-count { 
-  color: var(--text-muted, #2A2D32); 
+  color: var(--text-muted, #556890); 
   font-size: 0.9rem; 
   margin-top: 0.4rem; 
 }
@@ -135,7 +135,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   font-weight: 600;
   margin-bottom: 0.6rem;
 }
@@ -278,7 +278,7 @@ body {
 
 .empty-state { 
   text-align: center; 
-  color: var(--text-muted, #2A2D32); 
+  color: var(--text-muted, #556890); 
   padding: 4rem; 
 }
 
@@ -393,7 +393,7 @@ body {
 
 .logout-btn {
   background: transparent;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   border: 2px solid var(--border, #d4dfe6);
   padding: 0.7rem 1.4rem;
   border-radius: var(--radius-full, 999px);
@@ -416,7 +416,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   gap: 1rem;
 }
 

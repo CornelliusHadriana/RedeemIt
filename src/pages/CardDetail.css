@@ -162,7 +162,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   font-weight: 600;
   margin-bottom: 0.4rem;
 }
@@ -252,7 +252,7 @@
 
 /* transactions */
 .no-transactions {
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   font-size: 0.9rem;
   text-align: center;
   padding: 1rem 0;
@@ -283,7 +283,7 @@
 
 .transaction-date {
   font-size: 0.8rem;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
 }
 
 .transaction-balance {
@@ -295,7 +295,7 @@
 .detail-error {
   text-align: center;
   padding: 4rem;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
 }
 
 .detail-error p {
@@ -323,7 +323,7 @@
 .detail-loading {
   text-align: center;
   padding: 4rem;
-  color: var(--text-muted, #2A2D32);
+  color: var(--text-muted, #556890);
   font-size: 1.1rem;
 }
 
@@ -434,7 +434,7 @@
 }
 
 .modal-content p {
-  color: var(--text-secondary, #2A2D32);
+  color: var(--text-secondary, #556890);
   font-size: 0.95rem;
   line-height: 1.5;
   margin-bottom: 1.5rem;
@@ -464,7 +464,7 @@
 
 .cancel-btn {
   background: var(--background, #f8fafb);
-  color: var(--text-secondary, #2A2D32);
+  color: var(--text-secondary, #556890);
   border: 1px solid var(--border, #d4dfe6);
 }
 
