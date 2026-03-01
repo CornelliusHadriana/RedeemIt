@@ -1,5 +1,4 @@
 import './CardTile.css'
-import { useNavigate } from 'react-router-dom'
 
 const BRAND_COLORS = {
   starbucks: { bg: '#00704A', text: '#fff', accent: '#CBA258' },
@@ -20,6 +19,12 @@ function getBrandColors(name) {
 function isExpiringSoon(dateStr) {
   if (!dateStr) return false
   return new Date(dateStr) - new Date() < 7 * 24 * 60 * 60 * 1000
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 export default function CardTile({ card, isActive, onExpand }) {
@@ -53,7 +58,7 @@ export default function CardTile({ card, isActive, onExpand }) {
         </div>
         <div className="card-meta">
           <span>of ${parseFloat(card.original_balance).toFixed(2)}</span>
-          <span>Exp: {card.expiration_date}</span>
+          <span className="card-expiry">Exp: {formatDate(card.expiration_date)}</span>
         </div>
       </div>
     </div>

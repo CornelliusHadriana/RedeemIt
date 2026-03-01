@@ -134,6 +134,13 @@
 .card-meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.7rem;
-  opacity: 0.6;
+  opacity: 0.8;
+}
+
+.card-expiry {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 1;
 }
