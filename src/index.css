@@ -10,7 +10,7 @@
   /* Primary Colors */
   --primary: #000080;
   --primary-dark: #000060;
-  --primary-light: #0000AE;
+  --primary-light: #2A2D32;
   
   /* Background & Surface */
   --background: #f8fafb;
@@ -18,7 +18,7 @@
   
   /* Text Colors */
   --text-primary: #000080;
-  --text-secondary: #0000AE;
+  --text-secondary: #2A2D32;
   --text-muted: #3939FF;
   
   /* Border */
