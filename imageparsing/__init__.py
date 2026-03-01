@@ -5,7 +5,5 @@ This module provides functionality to read gift card images and extract
 relevant information using OCR (pytesseract).
 """
 
-from .card_reader import GiftCardReader
-from .models import GiftCardInfo
-
-__all__ = ["GiftCardReader", "GiftCardInfo"]
+from .groq_parser import parse_gift_card_image
+__all__ = ["parse_gift_card_image"]
