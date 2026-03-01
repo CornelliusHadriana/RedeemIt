@@ -129,7 +129,7 @@
 
 .upload-option-sub {
   font-size: 0.72rem;
-  color: var(--text-muted, #8a9ba8);
+  color: var(--text-muted, #2A2D32);
 }
 
 /* qr code */
@@ -145,7 +145,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--text-muted, #8a9ba8);
+  color: var(--text-muted, #2A2D32);
   font-weight: 600;
 }
 
@@ -180,13 +180,13 @@
 
 .qr-sub {
   font-size: 0.8rem;
-  color: var(--text-muted, #8a9ba8);
+  color: var(--text-muted, #2A2D32);
 }
 
 .qr-cancel {
   background: transparent;
   border: 1px solid var(--border, #d4dfe6);
-  color: var(--text-secondary, #5a6d7a);
+  color: var(--text-secondary, #2A2D32);
   padding: 0.4rem 1.2rem;
   font-size: 0.8rem;
   font-family: 'League Spartan', sans-serif;
@@ -319,7 +319,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted, #8a9ba8);
+  color: var(--text-muted, #2A2D32);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -339,7 +339,7 @@
 }
 
 .form-group input::placeholder { 
-  color: var(--text-muted, #8a9ba8); 
+  color: var(--text-muted, #2A2D32); 
 }
 
 .form-group input:focus,
