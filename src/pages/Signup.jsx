@@ -29,7 +29,7 @@ export default function Signup() {
 
     try {
       const result = await signup(email, password)
-      if (result.id) {
+      if (result.user_id || result.id) {
         // Auto-login after successful signup
         const loginResult = await login(email, password)
         if (loginResult.access_token) {
