@@ -96,3 +96,46 @@ export async function getSummary() {
   })
   return res.json()
 }
+
+export async function uploadCardImage(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch(`${BASE}/giftcards/upload`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: formData
+  })
+  return res.json()
+}
+
+export async function updateCard(id, cardData) {
+  const res = await fetch(`${BASE}/giftcards/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(cardData)
+  })
+  return res.json()
+}
+
+export async function getExpiringCards(days) {
+  const res = await fetch(`${BASE}/giftcards/expiring?days=${days}`, {
+    headers: authHeaders()
+  })
+  return res.json()
+}
+
+export async function getCurrentUser() {
+  const res = await fetch(`${BASE}/users/me`, {
+    headers: authHeaders()
+  })
+  return res.json()
+}
+
+export async function updateUser(data) {
+  const res = await fetch(`${BASE}/users/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data)
+  })
+  return res.json()
+}

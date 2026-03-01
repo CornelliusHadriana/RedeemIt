@@ -1,4 +1,5 @@
 import os
+import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.database import create_db_and_tables
@@ -11,7 +12,27 @@ app = FastAPI(
 )
 
 # Get CORS origins from environment or use defaults
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+# Handle both JSON array format and comma-separated format
+origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if origins_env.startswith("["):
+    # JSON array format
+    try:
+        allowed_origins = json.loads(origins_env)
+    except json.JSONDecodeError:
+        allowed_origins = ["*"]
+elif origins_env:
+    # Comma-separated format
+    allowed_origins = [o.strip() for o in origins_env.split(",")]
+else:
+    # Default for development
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ]
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,15 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import CardTile from '../components/CardTile'
+import { logout, getCards, getSummary } from '../lib/api'
 import './Dashboard.css'
-
-const fakeCards = [
-  { id: '1', retailer_name: 'Starbucks', balance: 25.00, original_balance: 50.00, expiration_date: '2025-03-01', category: 'food' },
-  { id: '2', retailer_name: 'Amazon', balance: 50.00, original_balance: 50.00, expiration_date: '2025-12-01', category: 'electronics' },
-  { id: '3', retailer_name: 'Hollister', balance: 15.00, original_balance: 75.00, expiration_date: '2025-02-28', category: 'clothing' },
-  { id: '4', retailer_name: 'Target', balance: 100.00, original_balance: 100.00, expiration_date: '2026-01-01', category: 'other' },
-  { id: '5', retailer_name: 'Apple', balance: 200.00, original_balance: 200.00, expiration_date: '2026-06-01', category: 'electronics' },
-]
 
 const SORT_OPTIONS = [
   { label: 'Sort by: Expiring Soon', value: 'expiring' },
@@ -33,16 +26,54 @@ function getBrandColor(name) {
 }
 
 export default function Dashboard() {
-  const [cards] = useState(fakeCards)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [cards, setCards] = useState([])
+  const [summary, setSummary] = useState({ total_balance: 0, card_count: 0 })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [sortBy, setSortBy] = useState('expiring')
-  const [filterCategory, setFilterCategory] = useState('all')
-  const [pendingCategory, setPendingCategory] = useState('all')
+  const [filterCategory, setFilterCategory] = useState(searchParams.get('category') || 'all')
+  const [pendingCategory, setPendingCategory] = useState(searchParams.get('category') || 'all')
   const [filterOpen, setFilterOpen] = useState(false)
   const [flyCard, setFlyCard] = useState(null)
   const filterRef = useRef(null)
   const activeCardRef = useRef(null)
   const navigate = useNavigate()
+
+  // Fetch cards and summary on mount
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [cardsData, summaryData] = await Promise.all([
+          getCards(),
+          getSummary()
+        ])
+        if (cardsData.detail) {
+          throw new Error(cardsData.detail)
+        }
+        setCards(cardsData)
+        setSummary(summaryData)
+      } catch (err) {
+        setError(err.message || 'Failed to load cards')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Update URL when category filter changes
+  useEffect(() => {
+    if (filterCategory === 'all') {
+      searchParams.delete('category')
+    } else {
+      searchParams.set('category', filterCategory)
+    }
+    setSearchParams(searchParams, { replace: true })
+  }, [filterCategory, searchParams, setSearchParams])
 
   useEffect(() => {
     function handleClick(e) {
@@ -69,8 +100,7 @@ export default function Dashboard() {
     return result
   }, [cards, sortBy, filterCategory])
 
-  const totalBalance = cards.reduce((sum, c) => sum + c.balance, 0)
-  const safeIndex = Math.min(activeIndex, filteredCards.length - 1)
+  const safeIndex = Math.min(activeIndex, Math.max(filteredCards.length - 1, 0))
   const prev = () => setActiveIndex(i => (i - 1 + filteredCards.length) % filteredCards.length)
   const next = () => setActiveIndex(i => (i + 1) % filteredCards.length)
 
@@ -125,15 +155,36 @@ export default function Dashboard() {
 
       <div className="dashboard-header">
         <div className="logo">RedeemIt</div>
-        <button className="add-btn">+ Add Card</button>
+        <div className="header-actions">
+          <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>
+            Logout
+          </button>
+          <button className="add-btn" onClick={() => navigate('/add')}>+ Add Card</button>
+        </div>
       </div>
 
       <div className="total-section">
         <p className="total-label">Total Balance</p>
-        <h1 className="total-amount">${totalBalance.toFixed(2)}</h1>
-        <p className="card-count">{cards.length} gift cards</p>
+        <h1 className="total-amount">${(summary.total_balance || 0).toFixed(2)}</h1>
+        <p className="card-count">{summary.card_count || 0} gift cards</p>
       </div>
 
+      {loading && (
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Loading your cards...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="error-state">
+          <p>Error: {error}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
       <div className="controls">
         <div className="filter-wrapper" ref={filterRef}>
           <button
@@ -208,6 +259,8 @@ export default function Dashboard() {
           />
         ))}
       </div>
+        </>
+      )}
     </div>
   )
 }

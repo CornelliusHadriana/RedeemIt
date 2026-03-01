@@ -1,19 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { getCard, getTransactions, logSpend, deleteCard } from '../lib/api'
 import './CardDetail.css'
-
-const fakeCards = [
-  { id: '1', retailer_name: 'Starbucks', balance: 25.00, original_balance: 50.00, expiration_date: '2025-03-01', category: 'food', card_number: '1234567890123456', pin: '1234', transactions: [
-    { id: 't1', amount_spent: 10.00, balance_after: 40.00, created_at: '2025-01-15' },
-    { id: 't2', amount_spent: 15.00, balance_after: 25.00, created_at: '2025-02-01' },
-  ]},
-  { id: '2', retailer_name: 'Amazon', balance: 50.00, original_balance: 50.00, expiration_date: '2025-12-01', category: 'electronics', card_number: '9876543210987654', pin: '5678', transactions: [] },
-  { id: '3', retailer_name: 'Hollister', balance: 15.00, original_balance: 75.00, expiration_date: '2025-02-28', category: 'clothing', card_number: '1111222233334444', pin: '9999', transactions: [
-    { id: 't3', amount_spent: 60.00, balance_after: 15.00, created_at: '2025-01-10' },
-  ]},
-  { id: '4', retailer_name: 'Target', balance: 100.00, original_balance: 100.00, expiration_date: '2026-01-01', category: 'other', card_number: '5555666677778888', pin: '0000', transactions: [] },
-  { id: '5', retailer_name: 'Apple', balance: 200.00, original_balance: 200.00, expiration_date: '2026-06-01', category: 'electronics', card_number: '9999000011112222', pin: '4321', transactions: [] },
-]
 
 const BRAND_COLORS = {
   starbucks: '#00704A',
@@ -31,14 +19,130 @@ function getBrandColor(name) {
 export default function CardDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const card = fakeCards.find(c => c.id === id)
+  
+  // Card and transactions state
+  const [card, setCard] = useState(null)
+  const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
+  // UI state
   const [showPin, setShowPin] = useState(false)
   const [showNumber, setShowNumber] = useState(false)
   const [copied, setCopied] = useState(null)
   const [amount, setAmount] = useState('')
-  const [entered, setEntered] = useState(false)
+  const [spendLoading, setSpendLoading] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  
+  // Toast state
+  const [toast, setToast] = useState(null)
 
-  if (!card) return <div className="detail-error">Card not found</div>
+  function showToast(message, type = 'success') {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  // Fetch card data
+  useEffect(() => {
+    async function fetchCard() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await getCard(id)
+        if (data.detail) {
+          setError(data.detail)
+        } else {
+          setCard(data)
+        }
+      } catch (err) {
+        setError('Failed to load card')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCard()
+  }, [id])
+
+  // Fetch transactions
+  useEffect(() => {
+    async function fetchTransactions() {
+      try {
+        const data = await getTransactions(id)
+        if (Array.isArray(data)) {
+          setTransactions(data)
+        }
+      } catch (err) {
+        console.error('Failed to load transactions:', err)
+      }
+    }
+    if (id) fetchTransactions()
+  }, [id])
+
+  // Handle spend logging
+  async function handleSpend() {
+    if (!amount || parseFloat(amount) <= 0) return
+    setSpendLoading(true)
+    try {
+      const result = await logSpend(id, parseFloat(amount))
+      if (result.detail) {
+        showToast(result.detail, 'error')
+      } else {
+        showToast('Spend logged successfully!')
+        // Refresh card and transactions
+        const [updatedCard, updatedTransactions] = await Promise.all([
+          getCard(id),
+          getTransactions(id)
+        ])
+        if (!updatedCard.detail) setCard(updatedCard)
+        if (Array.isArray(updatedTransactions)) setTransactions(updatedTransactions)
+        setAmount('')
+      }
+    } catch (err) {
+      showToast('Failed to log spend', 'error')
+    } finally {
+      setSpendLoading(false)
+    }
+  }
+
+  // Handle card deletion
+  async function handleDelete() {
+    setDeleteLoading(true)
+    try {
+      const result = await deleteCard(id)
+      if (result.detail && result.detail !== 'Gift card deleted') {
+        showToast(result.detail, 'error')
+        setShowDeleteModal(false)
+      } else {
+        showToast('Card deleted successfully!')
+        setTimeout(() => navigate('/'), 500)
+      }
+    } catch (err) {
+      showToast('Failed to delete card', 'error')
+      setShowDeleteModal(false)
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="detail-page">
+        <div className="detail-loading">Loading card...</div>
+      </div>
+    )
+  }
+
+  if (error || !card) {
+    return (
+      <div className="detail-page">
+        <div className="detail-error">
+          <p>{error || 'Card not found'}</p>
+          <button className="back-link" onClick={() => navigate('/')}>← Back to Dashboard</button>
+        </div>
+      </div>
+    )
+  }
 
   const color = getBrandColor(card.retailer_name)
   const percentLeft = (card.balance / card.original_balance) * 100
@@ -47,13 +151,6 @@ export default function CardDetail() {
     navigator.clipboard.writeText(text)
     setCopied(field)
     setTimeout(() => setCopied(null), 2000)
-  }
-
-  function handleSpend() {
-    if (!amount) return
-    setEntered(true)
-    setTimeout(() => setEntered(false), 2000)
-    setAmount('')
   }
 
   return (
@@ -132,9 +229,15 @@ export default function CardDetail() {
               placeholder="Amount spent ($)"
               value={amount}
               onChange={e => setAmount(e.target.value)}
+              disabled={spendLoading}
             />
-            <button className="spend-btn" style={{ background: color }} onClick={handleSpend}>
-              {entered ? '✓ Logged!' : 'Log Spend'}
+            <button 
+              className="spend-btn" 
+              style={{ background: color }} 
+              onClick={handleSpend}
+              disabled={spendLoading || !amount}
+            >
+              {spendLoading ? 'Logging...' : 'Log Spend'}
             </button>
           </div>
         </div>
@@ -142,24 +245,67 @@ export default function CardDetail() {
         {/* transaction history */}
         <div className="detail-section">
           <h3 className="section-title">Transaction History</h3>
-          {card.transactions.length === 0 ? (
+          {transactions.length === 0 ? (
             <p className="no-transactions">No transactions yet</p>
           ) : (
             <div className="transactions-list">
-              {card.transactions.map(t => (
+              {transactions.map(t => (
                 <div key={t.id} className="transaction-row">
                   <div>
-                    <span className="transaction-amount">-${t.amount_spent.toFixed(2)}</span>
+                    <span className="transaction-amount">-${parseFloat(t.amount_spent).toFixed(2)}</span>
                     <span className="transaction-date">{new Date(t.created_at).toLocaleDateString()}</span>
                   </div>
-                  <span className="transaction-balance">${t.balance_after.toFixed(2)} left</span>
+                  <span className="transaction-balance">${parseFloat(t.balance_after).toFixed(2)} left</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
+        {/* delete card */}
+        <div className="detail-section danger-section">
+          <button 
+            className="delete-btn" 
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete Card
+          </button>
+        </div>
+
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className={`toast toast-${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>Delete Card</h3>
+            <p>Are you sure you want to delete this {card.retailer_name} card? This action cannot be undone.</p>
+            <div className="modal-buttons">
+              <button 
+                className="modal-btn cancel-btn" 
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn confirm-btn" 
+                onClick={handleDelete}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
