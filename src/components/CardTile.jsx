@@ -23,7 +23,7 @@ function isExpiringSoon(dateStr) {
 }
 
 export default function CardTile({ card, isActive, onExpand }) {
-  const colors = getBrandColors(card.retailer_name)
+  const colors = getBrandColors(card.brand)
   const expiring = isExpiringSoon(card.expiration_date)
   const percentLeft = card.original_balance > 0
     ? (card.balance / card.original_balance) * 100
@@ -38,7 +38,7 @@ export default function CardTile({ card, isActive, onExpand }) {
       {expiring && <div className="expiry-badge">⚠ Expiring Soon</div>}
 
       <div className="card-top">
-        <span className="card-retailer">{card.retailer_name}</span>
+        <span className="card-retailer">{card.brand}</span>
         <span className="card-chip">💳</span>
       </div>
 

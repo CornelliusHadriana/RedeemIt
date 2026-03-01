@@ -62,6 +62,20 @@ async def upload_giftcard_image(
         raise HTTPException(status_code=422, detail=f"Failed to process image: {str(e)}")
 
 
+@router.post("/parse-image", response_model=GiftCardParseResult)
+async def parse_giftcard_image(
+    file: UploadFile = File(...),
+    current_user: str = None,  # Optional auth - can be used without login for parsing
+):
+    """
+    Alias for /upload - Parse a gift card image and extract card information.
+    
+    Returns extracted data for user to review/edit before saving.
+    Does NOT save to database - use POST /giftcards/ with the returned data.
+    """
+    return await upload_giftcard_image(file, current_user)
+
+
 @router.post("/", response_model=GiftCardPublic)
 def create_giftcard(giftcard: GiftCardCreate, session: SessionDep, current_user: CurrentUser):
     db_giftcard = GiftCard(

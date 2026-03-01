@@ -117,7 +117,7 @@ export default function Dashboard() {
     setFlyCard({
       id: card.id,
       color,
-      retailer_name: card.retailer_name,
+      brand: card.brand,
       balance: card.balance,
       expiration_date: card.expiration_date,
       top: rect.top,
@@ -144,7 +144,7 @@ export default function Dashboard() {
         >
           <div className="fly-card-inner">
             <div className="fly-card-front" style={{ background: flyCard.color }}>
-              <div className="fly-card-retailer">{flyCard.retailer_name}</div>
+              <div className="fly-card-retailer">{flyCard.brand}</div>
               <div className="fly-card-balance">${parseFloat(flyCard.balance).toFixed(2)}</div>
               <div className="fly-card-exp">Exp: {flyCard.expiration_date}</div>
             </div>
@@ -240,7 +240,7 @@ export default function Dashboard() {
                   <CardTile
                     card={card}
                     isActive={isActive}
-                    onExpand={(c) => handleExpand(c, getBrandColor(c.retailer_name))}
+                    onExpand={(c) => handleExpand(c, getBrandColor(c.brand))}
                   />
                 </div>
               )

@@ -144,7 +144,7 @@ export default function CardDetail() {
     )
   }
 
-  const color = getBrandColor(card.retailer_name)
+  const color = getBrandColor(card.brand)
   const percentLeft = (card.balance / card.original_balance) * 100
 
   function copy(text, field) {
@@ -161,7 +161,7 @@ export default function CardDetail() {
         <button className="back-btn" onClick={() => navigate('/')}>← Back</button>
         <div className="detail-hero-content">
           <div className="detail-hero-top">
-            <span className="detail-retailer">{card.retailer_name}</span>
+            <span className="detail-retailer">{card.brand}</span>
             <span className="detail-chip">💳</span>
           </div>
           <div className="detail-hero-balance">${parseFloat(card.balance).toFixed(2)}</div>
@@ -286,7 +286,7 @@ export default function CardDetail() {
         <div className="modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h3>Delete Card</h3>
-            <p>Are you sure you want to delete this {card.retailer_name} card? This action cannot be undone.</p>
+            <p>Are you sure you want to delete this {card.brand} card? This action cannot be undone.</p>
             <div className="modal-buttons">
               <button 
                 className="modal-btn cancel-btn" 
