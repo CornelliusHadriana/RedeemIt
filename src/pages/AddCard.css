@@ -85,7 +85,7 @@
   font-family: 'League Spartan', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
   margin-bottom: 1.2rem;
 }
 
@@ -124,7 +124,7 @@
 .upload-option-title {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
 }
 
 .upload-option-sub {
@@ -334,7 +334,7 @@
   font-size: 0.9rem;
   outline: none;
   background: var(--background, #f8fafb);
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
   transition: border-color 0.2s;
 }
 
@@ -374,7 +374,7 @@
 }
 
 .submit-btn:hover {
-  background: var(--primary-dark, #3d5a6e);
+  background: var(--primary-dark, #000080);
   transform: scale(1.01);
   box-shadow: 0 6px 20px rgba(84, 119, 146, 0.35);
 }

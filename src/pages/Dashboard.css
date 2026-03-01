@@ -4,7 +4,7 @@
 
 body {
   background: var(--background, #f8fafb);
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
   font-family: 'League Spartan', sans-serif;
   min-height: 100vh;
 }
@@ -47,7 +47,7 @@ body {
 .add-btn:hover { 
   transform: scale(1.05); 
   box-shadow: 0 6px 20px rgba(84, 119, 146, 0.35);
-  background: var(--primary-dark, #3d5a6e);
+  background: var(--primary-dark, #000080);
 }
 
 .total-section {
@@ -156,7 +156,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   font-family: 'League Spartan', sans-serif;
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
   text-align: left;
   transition: all 0.15s;
 }
@@ -189,7 +189,7 @@ body {
 
 .sort-select {
   background: var(--surface, white);
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #000080);
   border: 2px solid var(--border, #d4dfe6);
   padding: 0.5rem 1.2rem;
   border-radius: var(--radius-full, 999px);
@@ -471,5 +471,5 @@ body {
 
 .error-state button:hover {
   transform: scale(1.05);
-  background: var(--primary-dark, #3d5a6e);
+  background: var(--primary-dark, #000080);
 }
