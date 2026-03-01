@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ReedemIt</title>
+    <style>
+      body {
+        width: 300px;
+        padding: 16px;
+        font-family: sans-serif;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+
+      p.subtitle {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 16px;
+      }
+
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .card-logo {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        border-radius: 4px;
+      }
+
+      .card-brand {
+        font-weight: bold;
+        font-size: 15px;
+      }
+
+      .card-balance {
+        font-size: 13px;
+        color: #333;
+        margin-bottom: 2px;
+      }
+
+      .card-expiry {
+        font-size: 11px;
+        color: #888;
+        margin-bottom: 10px;
+      }
+
+      button {
+        width: 100%;
+        padding: 8px;
+        background: #2ecc71;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      button:hover {
+        background: #27ae60;
+      }
+
+      button:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+      }
+
+      /* Logout button */
+      #logout-btn {
+        width: auto;
+        padding: 4px 10px;
+        font-size: 11px;
+        background: #e74c3c;
+      }
+
+      #logout-btn:hover {
+        background: #c0392b;
+      }
+
+      /* Forms */
+      .auth-form {
+        display: none;
+      }
+
+      .auth-form.active {
+        display: block;
+      }
+
+      .auth-form input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+
+      .auth-form input:focus {
+        outline: none;
+        border-color: #2ecc71;
+      }
+
+      .auth-link {
+        font-size: 12px;
+        color: #3498db;
+        cursor: pointer;
+        text-align: center;
+        display: block;
+        margin-top: 10px;
+      }
+
+      .auth-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Error message */
+      #error-message {
+        display: none;
+        background: #fee;
+        color: #c0392b;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      #error-message.active {
+        display: block;
+      }
+
+      /* Success message */
+      #success-message {
+        display: none;
+        background: #e8f5e9;
+        color: #27ae60;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      #success-message.active {
+        display: block;
+      }
+
+      /* Loading spinner */
+      #loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      #loading-spinner.active {
+        display: block;
+      }
+
+      .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2ecc71;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: #888;
+        font-size: 13px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <h1>🎁 ReedemIt</h1>
+      <button id="logout-btn" class="hidden">Logout</button>
+    </div>
+    <p class="subtitle">Your gift cards</p>
+
+    <div id="error-message"></div>
+    <div id="success-message"></div>
+    <div id="loading-spinner"><div class="spinner"></div></div>
+
+    <!-- Login Form -->
+    <div id="login-form" class="auth-form">
+      <input type="email" id="login-email" placeholder="Email" required />
+      <input type="password" id="login-password" placeholder="Password" required />
+      <button id="login-btn">Login</button>
+      <span id="show-signup" class="auth-link">Create account</span>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signup-form" class="auth-form">
+      <input type="email" id="signup-email" placeholder="Email" required />
+      <input type="password" id="signup-password" placeholder="Password" required />
+      <button id="signup-btn">Sign Up</button>
+      <span id="show-login" class="auth-link">Back to login</span>
+    </div>
+
+    <div id="cards-list"></div>
+
+    <script src="api.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
