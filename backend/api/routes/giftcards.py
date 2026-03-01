@@ -12,13 +12,12 @@ from sqlmodel import select
 from datetime import datetime, timezone, timedelta
 from api.models import GiftCard, GiftCardCreate, GiftCardUpdate, GiftCardPublic, GiftCardRead, Transaction, GiftCardParseResult
 from api.dependencies import SessionDep, CurrentUser
-from imageparsing.card_reader import GiftCardReader
+
 from imageparsing.groq_parser import parse_gift_card_image as groq_parse
 
 router = APIRouter(prefix="/giftcards", tags=["giftcards"])
 
-# Initialize the card reader (LLM used as fallback if GOOGLE_API_KEY is set)
-card_reader = GiftCardReader(use_llm=True)
+
 
 
 @router.post("/upload", response_model=GiftCardParseResult)

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 
+
 app = FastAPI(
     title="RedeemIt API",
     description="Backend API for RedeemIt application",
