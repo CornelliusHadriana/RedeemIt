@@ -8,6 +8,12 @@ let logoutBtn;
 let errorMessage;
 let successMessage;
 let loadingSpinner;
+let cardDetail;
+
+// Card detail state
+let currentDetailCard = null;
+let cardNumberRevealed = false;
+let pinRevealed = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize DOM references
@@ -18,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   errorMessage = document.getElementById('error-message');
   successMessage = document.getElementById('success-message');
   loadingSpinner = document.getElementById('loading-spinner');
+  cardDetail = document.getElementById('card-detail');
 
   // Set up event listeners
   setupEventListeners();
@@ -66,6 +73,14 @@ function setupEventListeners() {
 
   // Logout
   logoutBtn.addEventListener('click', handleLogout);
+
+  // Card detail view
+  document.getElementById('back-btn').addEventListener('click', goBackToList);
+  document.getElementById('toggle-card-number').addEventListener('click', () => toggleField('card-number'));
+  document.getElementById('toggle-pin').addEventListener('click', () => toggleField('pin'));
+  document.getElementById('copy-card-number').addEventListener('click', () => copyToClipboard(currentDetailCard?.card_number, 'card-number'));
+  document.getElementById('copy-pin').addEventListener('click', () => copyToClipboard(currentDetailCard?.pin, 'pin'));
+  document.getElementById('use-card-detail-btn').addEventListener('click', handleUseCardFromDetail);
 }
 
 async function handleLogin() {
@@ -161,6 +176,7 @@ function renderCards(cards) {
   cards.forEach(card => {
     const cardEl = document.createElement('div');
     cardEl.className = 'card';
+    cardEl.style.cursor = 'pointer';
 
     const logoUrl = card.logo_url || `https://logo.clearbit.com/${card.brand.toLowerCase().replace(/\s+/g, '')}.com`;
     const balance = card.balance != null ? card.balance.toFixed(2) : '0.00';
@@ -172,30 +188,131 @@ function renderCards(cards) {
       </div>
       <div class="card-balance">Balance: $${balance}</div>
       <div class="card-expiry">Expires: ${formatDate(card.expiration_date)}</div>
-      <button data-id="${card.id}">Use this card</button>
     `;
 
     cardsList.appendChild(cardEl);
 
-    const button = cardEl.querySelector('button');
-    button.addEventListener('click', () => handleUseCard(card.id, button));
+    // Make entire card clickable to show detail
+    cardEl.addEventListener('click', () => showCardDetail(card.id));
   });
 }
 
-async function handleUseCard(cardId, button) {
+async function showCardDetail(cardId) {
+  showLoading();
+  hideError();
+
+  try {
+    const cardDetails = await getCard(cardId);
+    currentDetailCard = cardDetails;
+    cardNumberRevealed = false;
+    pinRevealed = false;
+
+    // Populate detail view
+    const logoUrl = cardDetails.logo_url || `https://logo.clearbit.com/${cardDetails.brand.toLowerCase().replace(/\s+/g, '')}.com`;
+    document.getElementById('detail-logo').src = logoUrl;
+    document.getElementById('detail-logo').style.display = '';
+    document.getElementById('detail-brand').textContent = cardDetails.brand;
+    document.getElementById('detail-balance').textContent = `$${cardDetails.balance != null ? cardDetails.balance.toFixed(2) : '0.00'}`;
+
+    // Set masked values
+    updateCardNumberDisplay();
+    updatePinDisplay();
+
+    // Reset toggle buttons
+    document.getElementById('toggle-card-number').textContent = 'Show';
+    document.getElementById('toggle-pin').textContent = 'Show';
+
+    // Show detail view, hide list
+    hideLoading();
+    cardsList.style.display = 'none';
+    cardDetail.classList.add('active');
+  } catch (error) {
+    hideLoading();
+    if (error.message.includes('Session expired') || error.message.includes('Not authenticated')) {
+      showLoginForm();
+    }
+    showError(error.message);
+  }
+}
+
+function updateCardNumberDisplay() {
+  const cardNumber = currentDetailCard?.card_number || '';
+  const displayEl = document.getElementById('card-number-value');
+  
+  if (cardNumberRevealed) {
+    // Format with spaces every 4 digits
+    displayEl.textContent = cardNumber.replace(/\s/g, '').match(/.{1,4}/g)?.join(' ') || cardNumber;
+  } else {
+    // Show masked with last 4 digits
+    const last4 = cardNumber.slice(-4);
+    displayEl.textContent = '•••• •••• •••• ' + last4;
+  }
+}
+
+function updatePinDisplay() {
+  const pin = currentDetailCard?.pin || '';
+  const displayEl = document.getElementById('pin-value');
+  
+  if (pinRevealed) {
+    displayEl.textContent = pin;
+  } else {
+    displayEl.textContent = '••••';
+  }
+}
+
+function toggleField(field) {
+  if (field === 'card-number') {
+    cardNumberRevealed = !cardNumberRevealed;
+    updateCardNumberDisplay();
+    document.getElementById('toggle-card-number').textContent = cardNumberRevealed ? 'Hide' : 'Show';
+  } else if (field === 'pin') {
+    pinRevealed = !pinRevealed;
+    updatePinDisplay();
+    document.getElementById('toggle-pin').textContent = pinRevealed ? 'Hide' : 'Show';
+  }
+}
+
+function copyToClipboard(text, field) {
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(`copy-${field}`);
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 1500);
+  }).catch(err => {
+    showError('Failed to copy: ' + err.message);
+  });
+}
+
+function goBackToList() {
+  cardDetail.classList.remove('active');
+  cardsList.style.display = '';
+  currentDetailCard = null;
+  cardNumberRevealed = false;
+  pinRevealed = false;
+}
+
+async function handleUseCardFromDetail() {
+  if (!currentDetailCard) return;
+  
+  const button = document.getElementById('use-card-detail-btn');
   button.disabled = true;
   button.textContent = 'Loading...';
 
   try {
-    const cardDetails = await getCard(cardId);
-
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {
         chrome.tabs.sendMessage(tabs[0].id, {
           action: 'fillCard',
           card: {
-            card_number: cardDetails.card_number,
-            pin: cardDetails.pin
+            card_number: currentDetailCard.card_number,
+            pin: currentDetailCard.pin
           }
         });
       }
@@ -218,6 +335,9 @@ function showLoginForm() {
   signupForm.classList.remove('active');
   logoutBtn.classList.add('hidden');
   cardsList.innerHTML = '';
+  cardDetail.classList.remove('active');
+  cardsList.style.display = '';
+  currentDetailCard = null;
 }
 
 function showLoading() {

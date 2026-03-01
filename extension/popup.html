@@ -199,6 +199,99 @@
         font-size: 13px;
       }
 
+      /* Card Detail View */
+      #card-detail {
+        display: none;
+      }
+
+      #card-detail.active {
+        display: block;
+      }
+
+      .back-btn {
+        width: auto;
+        padding: 6px 12px;
+        background: #95a5a6;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+
+      .back-btn:hover {
+        background: #7f8c8d;
+      }
+
+      .detail-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .detail-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 6px;
+      }
+
+      .detail-brand {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .detail-balance {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2ecc71;
+        margin-bottom: 16px;
+      }
+
+      .field-row {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+
+      .field-label {
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .field-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .field-value {
+        flex: 1;
+        font-size: 16px;
+        font-family: monospace;
+        color: #333;
+      }
+
+      .toggle-btn, .copy-btn {
+        width: auto;
+        padding: 4px 8px;
+        font-size: 11px;
+        background: #3498db;
+      }
+
+      .toggle-btn:hover, .copy-btn:hover {
+        background: #2980b9;
+      }
+
+      .copy-btn.copied {
+        background: #27ae60;
+      }
+
+      .use-card-btn {
+        margin-top: 16px;
+      }
+
       .hidden {
         display: none !important;
       }
@@ -233,6 +326,36 @@
     </div>
 
     <div id="cards-list"></div>
+
+    <!-- Card Detail View -->
+    <div id="card-detail">
+      <button class="back-btn" id="back-btn">← Back</button>
+      <div class="detail-header">
+        <img class="detail-logo" id="detail-logo" src="" onerror="this.style.display='none'" />
+        <span class="detail-brand" id="detail-brand"></span>
+      </div>
+      <div class="detail-balance" id="detail-balance"></div>
+      
+      <div class="field-row">
+        <div class="field-label">Card Number</div>
+        <div class="field-content">
+          <span class="field-value" id="card-number-value"></span>
+          <button class="toggle-btn" id="toggle-card-number">Show</button>
+          <button class="copy-btn" id="copy-card-number">Copy</button>
+        </div>
+      </div>
+      
+      <div class="field-row">
+        <div class="field-label">PIN</div>
+        <div class="field-content">
+          <span class="field-value" id="pin-value"></span>
+          <button class="toggle-btn" id="toggle-pin">Show</button>
+          <button class="copy-btn" id="copy-pin">Copy</button>
+        </div>
+      </div>
+      
+      <button class="use-card-btn" id="use-card-detail-btn">Use this card</button>
+    </div>
 
     <script src="api.js"></script>
     <script src="popup.js"></script>
