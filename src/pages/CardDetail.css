@@ -191,7 +191,7 @@
 .field-btn {
   background: var(--background, #f8fafb);
   border: 1.5px solid var(--border, #d4dfe6);
-  color: var(--primary, #000080);
+  color: var(--primary, #1e3a5f);
   padding: 0.3rem 0.8rem;
   border-radius: var(--radius-full, 999px);
   font-size: 0.78rem;
@@ -203,9 +203,9 @@
 }
 
 .field-btn:hover { 
-  background: var(--primary, #000080); 
+  background: var(--primary, #1e3a5f); 
   color: white; 
-  border-color: var(--primary, #000080); 
+  border-color: var(--primary, #1e3a5f); 
 }
 
 /* spend */
@@ -228,7 +228,7 @@
 }
 
 .spend-input:focus { 
-  border-color: var(--primary, #000080); 
+  border-color: var(--primary, #1e3a5f); 
 }
 
 .spend-btn {
@@ -242,7 +242,7 @@
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
-  background: var(--primary, #000080);
+  background: var(--primary, #1e3a5f);
 }
 
 .spend-btn:hover { 
@@ -276,7 +276,7 @@
 
 .transaction-amount {
   font-weight: 700;
-  color: var(--primary, #000080);
+  color: var(--primary, #1e3a5f);
   font-size: 1rem;
   margin-right: 0.8rem;
 }
@@ -304,7 +304,7 @@
 }
 
 .back-link {
-  background: var(--primary, #000080);
+  background: var(--primary, #1e3a5f);
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -316,7 +316,7 @@
 }
 
 .back-link:hover {
-  background: var(--primary-dark, #000060);
+  background: var(--primary-dark, #152d4a);
 }
 
 /* Loading state */
