@@ -4,7 +4,7 @@
 
 body {
   background: var(--background, #f8fafb);
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   font-family: 'League Spartan', sans-serif;
   min-height: 100vh;
 }
@@ -79,7 +79,7 @@ body {
 }
 
 .card-count { 
-  color: var(--text-muted, #556890); 
+  color: var(--text-muted, #4F81B7); 
   font-size: 0.9rem; 
   margin-top: 0.4rem; 
 }
@@ -135,7 +135,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   font-weight: 600;
   margin-bottom: 0.6rem;
 }
@@ -156,7 +156,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   font-family: 'League Spartan', sans-serif;
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   text-align: left;
   transition: all 0.15s;
 }
@@ -189,7 +189,7 @@ body {
 
 .sort-select {
   background: var(--surface, white);
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   border: 2px solid var(--border, #d4dfe6);
   padding: 0.5rem 1.2rem;
   border-radius: var(--radius-full, 999px);
@@ -278,7 +278,7 @@ body {
 
 .empty-state { 
   text-align: center; 
-  color: var(--text-muted, #556890); 
+  color: var(--text-muted, #4F81B7); 
   padding: 4rem; 
 }
 
@@ -393,7 +393,7 @@ body {
 
 .logout-btn {
   background: transparent;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   border: 2px solid var(--border, #d4dfe6);
   padding: 0.7rem 1.4rem;
   border-radius: var(--radius-full, 999px);
@@ -416,7 +416,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   gap: 1rem;
 }
 

@@ -34,14 +34,14 @@
   font-family: 'League Spartan', sans-serif;
   font-size: 1.8rem;
   font-weight: 600;
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
   font-size: 0.95rem;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -61,7 +61,7 @@
 .form-group label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-primary, #1a2a36);
+  color: var(--text-primary, #4F81B7);
 }
 
 .form-group input {
@@ -72,7 +72,7 @@
   font-family: 'League Spartan', sans-serif;
   transition: all 0.2s;
   background: var(--background, #f8fafb);
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
 }
 
 .form-group input:focus {
@@ -82,7 +82,7 @@
 }
 
 .form-group input::placeholder {
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
 }
 
 .auth-error {
@@ -125,7 +125,7 @@
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
 }
 
 .auth-switch a {

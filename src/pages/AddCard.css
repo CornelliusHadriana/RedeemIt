@@ -85,7 +85,7 @@
   font-family: 'League Spartan', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   margin-bottom: 1.2rem;
 }
 
@@ -124,12 +124,12 @@
 .upload-option-title {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
 }
 
 .upload-option-sub {
   font-size: 0.72rem;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
 }
 
 /* qr code */
@@ -145,7 +145,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   font-weight: 600;
 }
 
@@ -180,13 +180,13 @@
 
 .qr-sub {
   font-size: 0.8rem;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
 }
 
 .qr-cancel {
   background: transparent;
   border: 1px solid var(--border, #d4dfe6);
-  color: var(--text-secondary, #556890);
+  color: var(--text-secondary, #4F81B7);
   padding: 0.4rem 1.2rem;
   font-size: 0.8rem;
   font-family: 'League Spartan', sans-serif;
@@ -319,7 +319,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted, #556890);
+  color: var(--text-muted, #4F81B7);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -334,12 +334,12 @@
   font-size: 0.9rem;
   outline: none;
   background: var(--background, #f8fafb);
-  color: var(--text-primary, #000080);
+  color: var(--text-primary, #4F81B7);
   transition: border-color 0.2s;
 }
 
 .form-group input::placeholder { 
-  color: var(--text-muted, #556890); 
+  color: var(--text-muted, #4F81B7); 
 }
 
 .form-group input:focus,
